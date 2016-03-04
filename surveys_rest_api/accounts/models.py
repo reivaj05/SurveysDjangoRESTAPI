@@ -28,11 +28,7 @@ class UserProfile(AbstractUser):
         ('Female', _('Female'))
     ]
 
-    age = models.PositiveSmallIntegerField(
-        _('User age'),
-        blank=True,
-        help_text=_('Write an age for the user profile')
-    )
+    birthday = models.DateField(null=True, blank=True)
     gender = models.CharField(
         _('User gender'),
         max_length=6,
@@ -40,6 +36,8 @@ class UserProfile(AbstractUser):
         blank=True,
         help_text=_('Select a gender for the user profile')
     )
+    id_network = models.CharField(blank=True, max_length=100)
+    biography = models.TextField(blank=True, max_length=300)
     updated_at = models.DateTimeField(auto_now=True)
     image_profile = models.ImageField(
         _('User image profile'),
@@ -52,7 +50,7 @@ class UserProfile(AbstractUser):
         help_text=_('Upload an image for the user profile')
     )
 
-    def __str__(self):
+    def __unicode__(self):
         return '{first_name} {last_name}'.format(
             first_name=self.first_name,
             last_name=self.last_name)
