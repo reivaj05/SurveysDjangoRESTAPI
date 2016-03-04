@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Store vagrant directory location for reference
+VAGRANT_SHARED_DIRECTORY=/vagrant
+
+# Enable color in prompt
+force_color_prompt=yes
+
+# Move to vagrant shared directory on each login
+cd $VAGRANT_SHARED_DIRECTORY
