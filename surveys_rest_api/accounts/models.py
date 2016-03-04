@@ -40,6 +40,7 @@ class UserProfile(AbstractUser):
         blank=True,
         help_text=_('Select a gender for the user profile')
     )
+    updated_at = models.DateTimeField(auto_now=True)
     image_profile = models.ImageField(
         _('User image profile'),
         blank=True,
