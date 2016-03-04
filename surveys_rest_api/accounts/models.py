@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 import uuid
 import os
@@ -9,10 +9,6 @@ import os
 
 
 def get_file_path(instance, filename):
-    """
-    Helper function to provide user profile images an unique filename
-    to avoid overwrites
-    """
     file_extension = filename.split('.')[-1]
     filename = "{file_name}.{file_extension}".format(
         file_name=uuid.uuid4(), file_extension=file_extension
@@ -21,11 +17,7 @@ def get_file_path(instance, filename):
     return path
 
 
-class UserProfile(models.Model):
-    """
-        Model to handle user profile information and extend
-        the functionality of the basic Django User model and its fields
-    """
+class UserProfile(AbstractUser):
 
     class Meta:
         verbose_name = _('User')
@@ -36,10 +28,8 @@ class UserProfile(models.Model):
         ('Female', _('Female'))
     ]
 
-    authentication_user = models.OneToOneField(User)
     age = models.PositiveSmallIntegerField(
         _('User age'),
-        null=True,
         blank=True,
         help_text=_('Write an age for the user profile')
     )
@@ -61,7 +51,7 @@ class UserProfile(models.Model):
         help_text=_('Upload an image for the user profile')
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return '{first_name} {last_name}'.format(
-            first_name=self.authentication_user.first_name,
-            last_name=self.authentication_user.last_name)
+            first_name=self.first_name,
+            last_name=self.last_name)
