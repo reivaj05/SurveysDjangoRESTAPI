@@ -69,8 +69,6 @@ __pycache__/
 ### backup files ###
 *~
 
-.gitconfig
-
 ### Vagrant ###
 .vagrant/
 
