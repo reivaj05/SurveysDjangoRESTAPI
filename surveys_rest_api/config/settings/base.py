@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'surveys.apps.SurveysConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
