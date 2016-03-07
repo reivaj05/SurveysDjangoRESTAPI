@@ -1,8 +1,13 @@
 from django.conf.urls import url, include
+from rest_framework import routers
+from accounts.views import UserProfileViewSet
 
+router = routers.DefaultRouter()
+router.register(r'accounts', UserProfileViewSet)
 
 urlpatterns = [
-    url(r'^surveys/', include('surveys.urls'))
+    url(r'^surveys/', include('surveys.urls')),
+    url(r'^', include(router.urls)),
     # url(r'^$', IndexView.as_view(), name='index'),
     # url(
     #     r'^(?P<venue_id>[0-9]+)/menu-detail/(?P<pk>[0-9]+)$',
