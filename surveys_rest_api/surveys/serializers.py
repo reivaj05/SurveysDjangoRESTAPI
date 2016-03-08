@@ -1,13 +1,21 @@
 # from django.contrib.auth import update_session_auth_hash
 from rest_framework import serializers
-from .models import Section, Survey
+from .models import Question, Section, Survey
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ('id', 'text', 'hint', 'required', 'question_type',)
 
 
 class SectionSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True)
+
     class Meta:
         model = Section
         fields = (
-            'id', 'title', 'description',
+            'id', 'title', 'description', 'questions',
         )
 
 
