@@ -1,6 +1,20 @@
 # from django.contrib.auth import update_session_auth_hash
 from rest_framework import serializers
-from .models import Question, QuestionType, Section, Survey
+from .models import (
+    Answer, Option, Question, QuestionType, Section, Survey
+)
+
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('id', 'text')
+
+
+class OptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
+        fields = ('id', 'text')
 
 
 class QuestionTypeSerializer(serializers.ModelSerializer):
@@ -12,10 +26,15 @@ class QuestionTypeSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    options = OptionSerializer(many=True)
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'hint', 'required', 'question_type',)
+        fields = (
+            'id', 'text', 'hint',
+            'required', 'question_type',
+            'options',
+        )
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -50,16 +69,15 @@ class SurveySerializer(serializers.ModelSerializer):
                 **section
             )
             for question in questions_data:
-                # pop options data
-                # pop answers data
+                options_data = question.pop('options')
                 question_type = question.pop('question_type')
                 question_created = Question.objects.create(
                     section=section_created,
                     question_type=question_type,
                     **question
                 )
-                # for options and save
-                # for answers and save
+                for option in options_data:
+                    Option.objects.create(question=question_created, **option)
 
         # self.create_data(sections_data, Section, 'survey=fk', survey)
         return survey_created
