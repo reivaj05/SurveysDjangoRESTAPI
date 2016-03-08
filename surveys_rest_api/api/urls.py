@@ -8,6 +8,8 @@ router.register(r'accounts', UserProfileViewSet)
 urlpatterns = [
     url(r'^surveys/', include('surveys.urls')),
     url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     # url(r'^$', IndexView.as_view(), name='index'),
     # url(
     #     r'^(?P<venue_id>[0-9]+)/menu-detail/(?P<pk>[0-9]+)$',
