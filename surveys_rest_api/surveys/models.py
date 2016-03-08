@@ -46,7 +46,7 @@ class QuestionType(models.Model):
     description = models.CharField(blank=True, max_length=200)
 
     def __str__(self):
-        return self.type + ': ' + self.description
+        return self.question_type + ': ' + self.description
 
 
 class Question(models.Model):
@@ -62,7 +62,7 @@ class Question(models.Model):
     section = models.ForeignKey(Section, related_name='questions')
 
     def __str__(self):
-        self.text
+        return self.text
 
 
 class Option(models.Model):
