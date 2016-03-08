@@ -1,17 +1,42 @@
-from rest_framework import permissions
-from rest_framework import viewsets
-from common.permissions import IsOwnerOrReadOnly
-from .models import Survey
-from .serializers import SurveySerializer
+from django.shortcuts import get_object_or_404
+from rest_framework import permissions, viewsets
+from rest_framework.response import Response
+from common.permissions import BelongToUser
+from .models import Section, Survey
+from .serializers import SectionSerializer, SurveySerializer
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly,
+        permissions.IsAuthenticated,
+        BelongToUser,
     )
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def list(self, request):
+        queryset = self.queryset.filter(user=request.user)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+
+class SectionViewSet(viewsets.ModelViewSet):
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        # IsOwnerOrReadOnly,
+    )
+    queryset = Section.objects.all()
+    serializer_class = SectionSerializer
+
+    def list(self, request, survey_pk=None):
+        queryset = self.queryset.filter(survey=survey_pk)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None, survey_pk=None):
+        section = get_object_or_404(self.queryset, pk=pk, survey=survey_pk)
+        serializer = self.serializer_class(section)
+        return Response(serializer.data)
