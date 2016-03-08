@@ -53,8 +53,8 @@ class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
         fields = (
-            'id', 'title', 'description', 'created_at',
-            'updated_at', 'active', 'sections', 'user'
+            'id', 'user', 'title', 'description', 'created_at',
+            'updated_at', 'active', 'sections',
         )
 
         read_only_fields = ('created_at', 'updated_at', 'user')
