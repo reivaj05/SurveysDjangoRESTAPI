@@ -12,3 +12,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
     )
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
