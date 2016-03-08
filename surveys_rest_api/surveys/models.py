@@ -30,7 +30,7 @@ class Section(models.Model):
 
     title = models.CharField(max_length=80)
     description = models.TextField(blank=True, max_length=200)
-    survey = models.ForeignKey(Survey)
+    survey = models.ForeignKey(Survey, related_name='sections')
 
     def __str__(self):
         return self.title
@@ -58,8 +58,8 @@ class Question(models.Model):
     text = models.CharField(max_length=80)
     hint = models.CharField(blank=True, max_length=80)
     required = models.BooleanField(default=False)
-    question_type = models.ForeignKey(QuestionType)
-    section = models.ForeignKey(Section)
+    question_type = models.ForeignKey(QuestionType, related_name='questions')
+    section = models.ForeignKey(Section, related_name='questions')
 
     def __str__(self):
         self.text
@@ -72,7 +72,7 @@ class Option(models.Model):
         verbose_name_plural = "Options"
 
     text = models.CharField(max_length=80)
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, related_name='options')
 
     def __str__(self):
         self.text
@@ -85,7 +85,7 @@ class Answer(models.Model):
         verbose_name_plural = "Answers"
 
     text = models.CharField(max_length=80)
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, related_name='answers')
 
     def __str__(self):
         return self.text
