@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from accounts.models import UserProfile
 
 
 # Create your models here.
@@ -15,6 +16,7 @@ class Survey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    user = models.ForeignKey(UserProfile, related_name='surveys')
 
     def __str__(self):
         return self.title
