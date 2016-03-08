@@ -13,3 +13,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if hasattr(obj, 'user'):
             return obj.user == request.user
         return obj == request.user
+
+
+class BelongToUser(permissions.BasePermission):
+    message = 'Not your survey, wen dont allow it'
+
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
