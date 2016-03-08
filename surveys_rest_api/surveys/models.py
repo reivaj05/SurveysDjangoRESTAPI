@@ -75,7 +75,7 @@ class Option(models.Model):
     question = models.ForeignKey(Question, related_name='options')
 
     def __str__(self):
-        self.text
+        return self.text
 
 
 class Answer(models.Model):
