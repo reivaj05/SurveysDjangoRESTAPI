@@ -5,8 +5,6 @@ from .models import UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True, required=False)
-    # confirm_password = serializers.CharField(write_only=True, required=False)
 
     surveys = SurveySerializer(
         many=True,
@@ -20,13 +18,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'updated_at', 'first_name', 'last_name',
             'birthday', 'gender', 'id_network',
             'biography', 'image_profile', 'surveys',
-            # 'password', 'confirm_password',
+            'password',
         )
 
         read_only_fields = ('date_joined', 'updated_at')
 
-        # def create(self, validated_data):
-        #     return UserProfile.objects.create(**validated_data)
+    def create(self, validated_data):
+        user = UserProfile.objects.create(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
         # def update(self, instance, validated_data):
         #     instance.username = validated_data.get(
