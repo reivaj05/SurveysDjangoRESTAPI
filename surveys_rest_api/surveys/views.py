@@ -3,7 +3,9 @@ from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from common.permissions import BelongToUser
 from .models import Section, Survey
-from .serializers import SectionSerializer, SurveySerializer
+from .serializers import (
+    SectionSerializer, SurveySerializer, SurveySerializerPut
+)
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
@@ -21,6 +23,13 @@ class SurveyViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(user=request.user)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.request.method == 'PUT':
+            serializer_class = SurveySerializerPut
+        return serializer_class
 
 
 class SectionViewSet(viewsets.ModelViewSet):

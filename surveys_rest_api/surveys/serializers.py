@@ -47,6 +47,10 @@ class SectionSerializer(serializers.ModelSerializer):
         )
 
 
+class SectionSerializerPut(SectionSerializer):
+    id = serializers.IntegerField(required=True)
+
+
 class SurveySerializer(serializers.ModelSerializer):
     sections = SectionSerializer(many=True)
 
@@ -61,6 +65,76 @@ class SurveySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return create_survey(validated_data)
+
+    def update(self, survey, validated_data):
+        return update_survey(survey, validated_data)
+        # Unless the application properly enforces that this field is
+        # always set, the follow could raise a `DoesNotExist`, which
+        # would need to be handled.
+        # print sections_data.filter(id=15)
+        # profile.is_premium_member = profile_data.get(
+        #     'is_premium_member',
+        #     profile.is_premium_member
+        # )
+        # profile.has_support_contract = profile_data.get(
+        #     'has_support_contract',
+        #     profile.has_support_contract
+        # )
+        # profile.save()
+
+        return survey
+
+
+class SurveySerializerPut(SurveySerializer):
+    sections = SectionSerializerPut(many=True)
+
+
+def update_sections(sections_data, survey):
+
+    print '***************'
+    print sections_data
+    print '***************'
+    for section in sections_data:
+        questions_data = section.pop('questions')
+        try:
+            section_db = Section.objects.get(id=section.pop('id'))
+            if section_db.survey != survey:
+                raise serializers.ValidationError(
+                    'Not your section, we do not allow it'
+                )
+            section_db = unpack_values(section_db, section)
+            section_db.save()
+        except Section.DoesNotExist:
+            Section.objects.create(survey=survey, **section)
+
+
+def unpack_values(instance, new_data):
+    for attr, value in new_data.items():
+        setattr(instance, attr, value)
+    return instance
+
+
+def delete_sections(sections_db, sections_data):
+    ids = [value.get('id') for value in sections_data]
+    for section in sections_db:
+        if section.id not in ids:
+            section.delete()
+
+
+def update_survey(survey, validated_data):
+    survey.title = validated_data.get('title', survey.title)
+    survey.description = validated_data.get(
+        'description', survey.description
+    )
+    survey.active = validated_data.get('active', survey.active)
+    sections_data = validated_data.pop('sections')
+    sections_db = survey.sections.all()
+    delete_sections(sections_db, sections_data)
+    update_sections(sections_data, survey)
+
+    survey.save()
+    return None
+    # return survey
 
 
 def create_options(options_data, question_created):
