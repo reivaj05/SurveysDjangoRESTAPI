@@ -130,11 +130,11 @@ def delete_sections(sections_db, sections_data):
 
 
 def update_survey(survey, validated_data):
-    # Get survey data and update it
-    survey = unpack_values(survey, validated_data)
-
     # Get the sections to update from the request
     sections_data = validated_data.pop('sections')
+
+    # Get survey data and update it
+    survey = unpack_values(survey, validated_data)
 
     # Get the sections from the db to check which were deleted
     sections_db = survey.sections.all()
