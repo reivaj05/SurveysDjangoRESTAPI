@@ -105,8 +105,7 @@ def update_sections(sections_data, survey):
                 'Not your section, we do not allow it'
             )
             # Update the section from the db with the new values
-            section_db = unpack_values(section_db, section)
-            section_db.save()
+            section_db = update_instance(section_db, section)
         except Section.DoesNotExist:
             Section.objects.create(survey=survey, **section)
 
@@ -114,6 +113,12 @@ def update_sections(sections_data, survey):
 def check_owner(instance_db, instance, message):
     if instance_db != instance:
         raise serializers.ValidationError(message)
+
+
+def update_instance(instance, new_data):
+    instance = unpack_values(instance, new_data)
+    instance.save()
+    return instance
 
 
 def unpack_values(instance, new_data):
@@ -134,7 +139,7 @@ def update_survey(survey, validated_data):
     sections_data = validated_data.pop('sections')
 
     # Get survey data and update it
-    survey = unpack_values(survey, validated_data)
+    survey = update_instance(survey, validated_data)
 
     # Get the sections from the db to check which were deleted
     sections_db = survey.sections.all()
@@ -142,8 +147,6 @@ def update_survey(survey, validated_data):
     delete_sections(sections_db, sections_data)
     update_sections(sections_data, survey)
 
-    # Save the survey after sections, questions and options were saved
-    survey.save()
     return None
     # return survey
 
