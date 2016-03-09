@@ -90,22 +90,30 @@ class SurveySerializerPut(SurveySerializer):
 
 
 def update_sections(sections_data, survey):
-
-    print '***************'
-    print sections_data
-    print '***************'
     for section in sections_data:
+        # Get the questions data for each section
         questions_data = section.pop('questions')
+
+        # If the section already exists in the DB, just update their values
+        # otherwise we create a new section
         try:
             section_db = Section.objects.get(id=section.pop('id'))
-            if section_db.survey != survey:
-                raise serializers.ValidationError(
-                    'Not your section, we do not allow it'
-                )
+            # Check if the section belongs to the survey
+            check_owner(
+                section_db.survey,
+                survey,
+                'Not your section, we do not allow it'
+            )
+            # Update the section from the db with the new values
             section_db = unpack_values(section_db, section)
             section_db.save()
         except Section.DoesNotExist:
             Section.objects.create(survey=survey, **section)
+
+
+def check_owner(instance_db, instance, message):
+    if instance_db != instance:
+        raise serializers.ValidationError(message)
 
 
 def unpack_values(instance, new_data):
@@ -122,16 +130,19 @@ def delete_sections(sections_db, sections_data):
 
 
 def update_survey(survey, validated_data):
-    survey.title = validated_data.get('title', survey.title)
-    survey.description = validated_data.get(
-        'description', survey.description
-    )
-    survey.active = validated_data.get('active', survey.active)
+    # Get survey data and update it
+    survey = unpack_values(survey, validated_data)
+
+    # Get the sections to update from the request
     sections_data = validated_data.pop('sections')
+
+    # Get the sections from the db to check which were deleted
     sections_db = survey.sections.all()
+
     delete_sections(sections_db, sections_data)
     update_sections(sections_data, survey)
 
+    # Save the survey after sections, questions and options were saved
     survey.save()
     return None
     # return survey
