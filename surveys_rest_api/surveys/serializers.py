@@ -38,6 +38,10 @@ class QuestionSerializer(serializers.ModelSerializer):
         )
 
 
+class QuestionSerializerPut(QuestionSerializer):
+        id = serializers.IntegerField(required=True)
+
+
 class SectionSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True)
 
@@ -50,6 +54,7 @@ class SectionSerializer(serializers.ModelSerializer):
 
 class SectionSerializerPut(SectionSerializer):
     id = serializers.IntegerField(required=True)
+    questions = QuestionSerializerPut(many=True)
 
 
 class SurveySerializer(serializers.ModelSerializer):
