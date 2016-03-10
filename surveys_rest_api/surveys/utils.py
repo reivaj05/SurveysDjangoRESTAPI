@@ -5,26 +5,18 @@ from .models import (
 
 
 def update_options(options_data, question):
-    # delete_instances(question.options.all(), options_data)
-    # for option in options_data:
+    delete_instances(question.options.all(), options_data)
+    for option in options_data:
 
-    #     option_db = Option.objects.filter(id=option.pop('id')).first()
-    #     owner = (option_db.question if hasattr(option_db, 'question')
-    #              else None)
+        option_db = Option.objects.filter(id=option.pop('id')).first()
+        owner = (option_db.question if hasattr(option_db, 'question')
+                 else None)
 
-    #     update_data_survey(
-    #         option,
-    #         option_db,
-    #         Option,
-    #         'finish',
-    #         owner,
-    #         question,
-    #         'Not your option, we do not allow it',
-    #         None,
-    #         None,
-    #         question=question
-    #     )
-    pass
+        update_data_survey(
+            option, option_db, Option, 'finish', owner,
+            question, 'Not your option, we do not allow it',
+            None, None, question=question
+        )
 
 
 def update_questions(questions_data, section):
@@ -50,17 +42,17 @@ def update_sections(sections_data, survey):
         owner = section_db.survey if hasattr(section_db, 'survey') else None
 
         update_data_survey(
-            section, section_db, Section, 'questions',
-            owner, survey, 'Not your section, we do not allow it',
+            section, section_db, Section, 'questions', owner,
+            survey, 'Not your section, we do not allow it',
             update_questions, create_questions, survey=survey
         )
 
 
 def update_data_survey(
-        element, element_db, model, next_data_key,
-        owner, expected_owner, not_allow_message,
+        element, element_db, model, next_data_key, owner,
+        expected_owner, not_allow_message,
         next_update, next_create, **kwargs):
-    next_data = element.pop(next_data_key)
+    next_data = element.pop(next_data_key, None)
     if element_db:
 
         check_owner(
@@ -113,8 +105,7 @@ def update_survey(survey, validated_data):
     # Start updating the survey, first the sections
     update_sections(sections_data, survey)
 
-    return None
-    # return survey
+    return survey
 
 
 def create_options(options_data, question_created):
