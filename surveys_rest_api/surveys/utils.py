@@ -4,25 +4,79 @@ from .models import (
 )
 
 
-def update_sections(sections_data, survey):
-    for section in sections_data:
-        # Get the questions data for each section
-        questions_data = section.pop('questions')
+def update_options(options_data, question):
+    # delete_instances(question.options.all(), options_data)
+    # for option in options_data:
 
-        # If the section already exists in the DB, just update their values
-        # otherwise we create a new section
-        try:
-            section_db = Section.objects.get(id=section.pop('id'))
-            # Check if the section belongs to the survey
-            check_owner(
-                section_db.survey,
-                survey,
-                'Not your section, we do not allow it'
-            )
-            # Update the section from the db with the new values
-            section_db = update_instance(section_db, section)
-        except Section.DoesNotExist:
-            Section.objects.create(survey=survey, **section)
+    #     option_db = Option.objects.filter(id=option.pop('id')).first()
+    #     owner = (option_db.question if hasattr(option_db, 'question')
+    #              else None)
+
+    #     update_data_survey(
+    #         option,
+    #         option_db,
+    #         Option,
+    #         'finish',
+    #         owner,
+    #         question,
+    #         'Not your option, we do not allow it',
+    #         None,
+    #         None,
+    #         question=question
+    #     )
+    pass
+
+
+def update_questions(questions_data, section):
+    delete_instances(section.questions.all(), questions_data)
+    for question in questions_data:
+
+        question_db = Question.objects.filter(id=question.pop('id')).first()
+        owner = (question_db.section if hasattr(question_db, 'section')
+                 else None)
+
+        update_data_survey(
+            question, question_db, Question, 'options', owner,
+            section, 'Not your question, we do not allow it',
+            update_options, create_options, section=section
+        )
+
+
+def update_sections(sections_data, survey):
+    delete_instances(survey.sections.all(), sections_data)
+    for section in sections_data:
+
+        section_db = Section.objects.filter(id=section.pop('id')).first()
+        owner = section_db.survey if hasattr(section_db, 'survey') else None
+
+        update_data_survey(
+            section, section_db, Section, 'questions',
+            owner, survey, 'Not your section, we do not allow it',
+            update_questions, create_questions, survey=survey
+        )
+
+
+def update_data_survey(
+        element, element_db, model, next_data_key,
+        owner, expected_owner, not_allow_message,
+        next_update, next_create, **kwargs):
+    next_data = element.pop(next_data_key)
+    if element_db:
+
+        check_owner(
+            owner,
+            expected_owner,
+            not_allow_message
+        )
+
+        element_db = update_instance(element_db, element)
+        if next_data:
+            next_update(next_data, element_db)
+    else:
+        kwargs = dict(element.items() + kwargs.items())
+        element_created = model.objects.create(**kwargs)
+        if next_data:
+            next_create(next_data, element_created)
 
 
 def check_owner(instance_db, instance, message):
@@ -42,11 +96,11 @@ def unpack_values(instance, new_data):
     return instance
 
 
-def delete_sections(sections_db, sections_data):
-    ids = [value.get('id') for value in sections_data]
-    for section in sections_db:
-        if section.id not in ids:
-            section.delete()
+def delete_instances(instances_db, instances_data):
+    ids = [value.get('id') for value in instances_data]
+    for instance in instances_db:
+        if instance.id not in ids:
+            instance.delete()
 
 
 def update_survey(survey, validated_data):
@@ -56,10 +110,7 @@ def update_survey(survey, validated_data):
     # Get survey data and update it
     survey = update_instance(survey, validated_data)
 
-    # Get the sections from the db to check which were deleted
-    sections_db = survey.sections.all()
-
-    delete_sections(sections_db, sections_data)
+    # Start updating the survey, first the sections
     update_sections(sections_data, survey)
 
     return None
@@ -68,11 +119,13 @@ def update_survey(survey, validated_data):
 
 def create_options(options_data, question_created):
     for option in options_data:
+        check_if_has_id(option)
         Option.objects.create(question=question_created, **option)
 
 
 def create_questions(questions_data, section_created):
     for question in questions_data:
+        check_if_has_id(question)
         options_data = question.pop('options')
         question_type = question.pop('question_type')
         question_created = Question.objects.create(
@@ -83,8 +136,16 @@ def create_questions(questions_data, section_created):
         create_options(options_data, question_created)
 
 
+def check_if_has_id(element):
+    try:
+        element.pop('id')
+    except:
+        pass
+
+
 def create_sections(sections_data, survey_created):
     for section in sections_data:
+        check_if_has_id(section)
         questions_data = section.pop('questions')
         section_created = Section.objects.create(
             survey=survey_created,
