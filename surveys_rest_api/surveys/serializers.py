@@ -18,6 +18,10 @@ class OptionSerializer(serializers.ModelSerializer):
         fields = ('id', 'text')
 
 
+class OptionSerializerPut(OptionSerializer):
+    id = serializers.IntegerField(required=True)
+
+
 class QuestionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionType
@@ -40,6 +44,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class QuestionSerializerPut(QuestionSerializer):
         id = serializers.IntegerField(required=True)
+        options = OptionSerializerPut(many=True)
 
 
 class SectionSerializer(serializers.ModelSerializer):
