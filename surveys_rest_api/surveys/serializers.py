@@ -78,21 +78,7 @@ class SurveySerializer(serializers.ModelSerializer):
         return create_survey(validated_data)
 
     def update(self, survey, validated_data):
-        return update_survey(survey, validated_data)
-        # Unless the application properly enforces that this field is
-        # always set, the follow could raise a `DoesNotExist`, which
-        # would need to be handled.
-        # print sections_data.filter(id=15)
-        # profile.is_premium_member = profile_data.get(
-        #     'is_premium_member',
-        #     profile.is_premium_member
-        # )
-        # profile.has_support_contract = profile_data.get(
-        #     'has_support_contract',
-        #     profile.has_support_contract
-        # )
-        # profile.save()
-
+        survey = update_survey(survey, validated_data)
         return survey
 
 
