@@ -21,6 +21,14 @@ class Survey(models.Model):
     def __str__(self):
         return self.title
 
+    def count_sections_and_questions(self):
+        count_sections, count_questions = 0, 0
+        for section in self.sections:
+            count_sections += 1
+            for questions in section:
+                count_questions += 1
+        return count_sections, count_questions
+
 
 class Section(models.Model):
 
