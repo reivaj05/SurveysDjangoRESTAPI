@@ -2,9 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from common.permissions import BelongToUser
-from .models import Section, Survey
+from .models import QuestionType, Section, Survey
 from .serializers import (
-    SectionSerializer, SurveySerializer, SurveySerializerPut
+    QuestionTypeSerializer, SectionSerializer,
+    SurveySerializer, SurveySerializerPut
 )
 
 
@@ -49,3 +50,11 @@ class SectionViewSet(viewsets.ModelViewSet):
         section = get_object_or_404(self.queryset, pk=pk, survey=survey_pk)
         serializer = self.serializer_class(section)
         return Response(serializer.data)
+
+
+class QuestionTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    queryset = QuestionType.objects.all()
+    serializer_class = QuestionTypeSerializer
