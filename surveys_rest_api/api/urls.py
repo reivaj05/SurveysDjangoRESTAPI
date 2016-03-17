@@ -1,11 +1,12 @@
 from django.conf.urls import url, include
 from rest_framework_nested import routers
 from accounts.views import UserProfileViewSet
-from surveys.views import SectionViewSet, SurveyViewSet
+from surveys.views import QuestionTypeViewSet, SectionViewSet, SurveyViewSet
 
 router = routers.DefaultRouter()
 router.register(r'accounts', UserProfileViewSet)
 router.register(r'surveys', SurveyViewSet)
+router.register(r'question-types', QuestionTypeViewSet)
 
 surveys_router = routers.NestedSimpleRouter(
     router, r'surveys', lookup='survey'
