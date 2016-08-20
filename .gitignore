@@ -74,3 +74,4 @@ __pycache__/
 
 ### other files ###
 .DS_Store
+.gitconfig

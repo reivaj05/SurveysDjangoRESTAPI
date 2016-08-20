@@ -8,6 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Ubuntu 12.04 (Precise Pangolin) box.
   config.vm.box = "ubuntu/trusty64"
 
+  config.ssh.forward_agent = true
+
   # Forwarded port mapping.
   config.vm.network "forwarded_port", guest: 8000, host: 8000
 
