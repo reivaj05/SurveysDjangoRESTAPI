@@ -11,8 +11,8 @@ from .serializers import (
 
 class SurveyViewSet(viewsets.ModelViewSet):
     permission_classes = (
-        permissions.IsAuthenticated,
-        BelongToUser,
+        # permissions.IsAuthenticated,
+        # BelongToUser,
     )
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
@@ -21,8 +21,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def list(self, request):
-        queryset = self.queryset.filter(user=request.user)
-        serializer = self.serializer_class(queryset, many=True)
+        # queryset = self.queryset.filter(user=request.user)
+        serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
 
     def get_serializer_class(self):

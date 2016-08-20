@@ -34,5 +34,5 @@ MIDDLEWARE_CLASSES += (
 INTERNAL_IPS = ('127.0.0.1', '10.0.2.2')
 
 CORS_ORIGIN_WHITELIST = (
-        'localhost:8080',
+        'localhost:8001',
 )
