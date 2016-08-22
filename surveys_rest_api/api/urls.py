@@ -1,24 +1,9 @@
 from django.conf.urls import url, include
-from rest_framework_nested import routers
-from accounts.views import UserProfileViewSet
-from surveys.views import QuestionTypeViewSet, SectionViewSet, SurveyViewSet
-
-router = routers.DefaultRouter()
-router.register(r'accounts', UserProfileViewSet)
-router.register(r'surveys', SurveyViewSet)
-router.register(r'question-types', QuestionTypeViewSet)
-
-surveys_router = routers.NestedSimpleRouter(
-    router, r'surveys', lookup='survey'
-)
-surveys_router.register(
-    r'sections', SectionViewSet, base_name='survey-sections'
-)
-# router.register(r'surveys/(?P<pk>[0-9]+)/sections', SectionViewSet)
+# from accounts.views import UserProfileViewSet
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^', include(surveys_router.urls)),
+    url(r'^surveys/', include('surveys.urls')),
+    # url(r'^accounts', include('accounts.urls')),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     # url(r'^$', IndexView.as_view(), name='index'),

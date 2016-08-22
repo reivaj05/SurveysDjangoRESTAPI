@@ -9,13 +9,13 @@ from .utils import create_survey, update_survey
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'question')
 
 
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'question')
 
 
 class OptionSerializerPut(OptionSerializer):
@@ -38,7 +38,7 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'text', 'hint',
             'required', 'question_type',
-            'options',
+            'options', 'section',
         )
 
 
@@ -54,6 +54,7 @@ class SectionSerializer(serializers.ModelSerializer):
         model = Section
         fields = (
             'id', 'title', 'description', 'questions',
+            'survey'
         )
 
 
