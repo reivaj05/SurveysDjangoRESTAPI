@@ -1,6 +1,5 @@
 Django==1.9.1
 djangorestframework==3.3.2
 django-cors-headers
-drf-nested-routers
 psycopg2==2.6
 Pillow==3.1.1
